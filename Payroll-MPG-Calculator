@@ -1,0 +1,156 @@
+'''
+Program name: Payroll-MPG-Calculator
+
+Date: 02 February 2025
+
+Author: Haden Smith
+
+Data: 
+
+Notes: To view the summary of your data inputted while using MPG and payroll simply exit back
+to the main menu and you can view every entry
+
+'''
+
+employeeInformation = []
+tripStats = []
+
+def hs_add(x, y):
+    return x + y
+
+def hs_sub(x,y):
+    return x - y
+
+def hs_mult(x, y):
+    return x * y
+
+def hs_div(x, y):
+    if y == 0:
+        return "Can not divide by zero!"
+    return x / y
+
+def hs_printResult(x, y, operation, symbol):
+    result = operation(x, y)
+    print(f"{x} {symbol} {y} = {result}")
+
+def hs_MPG():
+    global tripStats
+    mpg = 0
+
+    while True:
+        try:
+        
+            tripName = input ("Enter the name of the trip! (Enter 'exit' to go back.): ").strip()
+            if tripName.lower() == "exit":
+                break
+            car = input("Enter the car used on this trip: ").strip()
+            miles = float(input(f"Enter the miles driven in the {car}: "))
+            gallons = float(input("Enter the gallons consumed during the trip: "))
+
+            mpg = hs_div(miles, gallons)
+
+            tripStats.append({
+                "tripName": tripName,
+                "car": car,
+                "miles": miles,
+                "gallons": gallons,
+                "MPG": mpg
+            })
+
+            print(f"\n{tripName}")
+            print("-" * 18)
+            print(f"\n{car:<10} Miles: {miles:<10} Gallons: {gallons:<10} MPG: {mpg:<10}\n")
+
+        except ValueError: 
+            print("Please enter numbers only for miles and gallons!!")
+
+    if (tripStats):
+        print("Summary of trips!")
+        print("-" * 40)
+        for trip in tripStats:
+            print(f"{trip['tripName']}")
+            print(f"{trip['car']:<15} Miles: {trip['miles']:<10.2f} Gallons: {trip['gallons']:<10.2f} MPG: {trip['MPG']:<10.2f}\n")
+
+
+
+
+def hs_payroll():
+    global employeeInformation
+    totalPayroll = 0
+
+    while True:
+        try:
+            name = input("Enter Employee name (or 'exit' to go back to the main menu): ").strip()
+            if name.lower() == "exit":
+                break
+
+            hours = float(input(f"Enter the amount of hours worked for {name}: "))
+            rate = float(input(f"Enter the hourly wage for {name} $: "))
+
+            total = hs_mult(hours, rate)
+            totalPayroll += total
+
+            employeeInformation.append({
+                "name": name,
+                "hours": hours,
+                "rate": rate,
+                "total": total,
+                "totalPayroll": totalPayroll
+            })
+
+            print("\nPay-Roll")
+            print(f"{name:<20} hours worked {hours} @ ${rate:<10} {total:>10,.2f}")
+            print(f"\n{'Total Payroll':<20}{'':>36}{totalPayroll:,.2f}")
+
+        except ValueError:
+            print("Invalid input! Please enter numbers only.")
+
+    if employeeInformation:
+        print("\nSummary of Payroll")
+        print(f"{'Name':<20}{'Hours Worked':<15}{'Hourly Rate':<15}{'Total Payroll':<15}")
+        print("-" * 60)
+        for person in employeeInformation:
+            print(f"{person['name']:<20}{person['hours']:<15.2f}${person['rate']:<14.2f}${person['totalPayroll']:<14,.2f}\n")
+
+
+
+    
+def main():
+    name = input("Enter your name: ")
+
+    print(f"Welcome {name}!")
+
+    while True:
+        print("1) hs_add\n2) hs_sub\n3) hs_mult\n4) hs_div\n5) hs_MPG\n6) hs_Simple Pay Calculator\n7) Exit\n")
+        choice = input("What would you like to do? ")
+
+        if choice == "7":
+            print(f"Goodbye {name}, thanks for using my application!")
+            break
+
+        if choice in ["1", "2", "3", "4"]:
+            try:
+                x = float(input("Enter the first number: "))
+                y = float(input("Enter the second number: "))
+    
+                if choice == "1":
+                    hs_printResult(x, y, hs_add, '+')
+                if choice =="2":
+                    hs_printResult(x,y,hs_sub,"-")
+                if choice =="3":
+                    hs_printResult(x, y, hs_mult, '*')
+                if choice == "4":
+                    hs_printResult(x, y, hs_div, '/')
+
+            except ValueError:
+                print("Please enter a numeric value!")
+        if choice == "5":
+            hs_MPG()
+    
+        if choice == "6":
+            hs_payroll()
+        else:
+            print("Invalid choice! Please try")
+
+if __name__ == "__main__":
+    main()

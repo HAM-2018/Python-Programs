@@ -1,8 +1,6 @@
 '''
 Program name: Test
 
-class info: CSC1340  18 January 2025
-
 Author: Haden Smith
 
 Data: 

@@ -1,8 +1,6 @@
 '''
 Program name: Test
 
-class info: name, number, term, year (CSC1340. 9 February 2025)
-
 Author: Haden Smith
 
 Data: 

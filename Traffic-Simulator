@@ -1,0 +1,173 @@
+import time
+import threading
+
+vehicles = []
+stopSim = False
+
+class Vehicle:
+
+    def __init__(self, speed, direction, position, name):
+        self._speed = max(0, speed)
+        self._direction = direction.upper()
+        self._position = position
+        self._name = name
+
+    def getName(self):
+        return self._name
+
+    def setSpeed(self, updatedSpeed):
+        if updatedSpeed >= 0:
+            self._speed = updatedSpeed
+
+    def setDirection(self, updatedDirection):
+        cardinalDirections = {"NORTH", "SOUTH", "EAST", "WEST"}
+        if updatedDirection.upper() in cardinalDirections:
+            self._direction = updatedDirection.upper()
+        else:
+            print("Invalid direction. Please enter NORTH, SOUTH, EAST OR WEST")
+
+    def getPosition(self):
+        return self._position
+
+    def updatePosition(self):
+        x, y = self._position
+        if self._direction == "NORTH":
+            self._position = (x, y + self._speed)
+        elif self._direction == "SOUTH":
+            self._position = (x, y - self._speed)
+        elif self._direction == "EAST":
+            self._position = (x + self._speed, y)
+        elif self._direction == "WEST":
+            self._position = (x - self._speed, y)
+
+    def moveVehicle(self):
+        self.updatePosition()
+
+
+def addVehicle():
+    try:
+        speed = int(input("Enter vehicle speed: "))
+        direction = input("Enter direction (NORTH, SOUTH, EAST, WEST): ").upper()
+        x = int(input("Enter vehicle position (x value): "))
+        y = int(input("Enter Y value: "))
+        name = input("Enter vehicle name: ")
+
+        if direction not in {"NORTH", "EAST", "WEST", "SOUTH"}:
+            raise ValueError("Enter a valid direction!")
+
+        vehicle = Vehicle(speed, direction, (x, y), name)
+        vehicles.append(vehicle)
+        print(f"Vehicle added - Name: {name}, Speed: {speed}, Direction: {direction}, Position: ({x},{y})")
+
+    except ValueError:
+        print("Please enter valid inputs!")
+
+
+previous_positions = {}  # Store previous positions of each vehicle
+
+def detectCollision():
+    global stopSim
+    seen_positions = {}  # Dictionary to track positions
+    collision_detected = False
+
+    for vehicle in vehicles:
+        current_pos = vehicle.getPosition()
+        previous_pos = previous_positions.get(vehicle.getName(), current_pos)
+
+        # Check if vehicle drove through another vehicle
+        for other_vehicle in vehicles:
+            if vehicle == other_vehicle:
+                continue  # Skip self
+
+            other_prev_pos = previous_positions.get(other_vehicle.getName(), other_vehicle.getPosition())
+            other_curr_pos = other_vehicle.getPosition()
+
+            # Detect vehicles driving through each other
+            if previous_pos == other_curr_pos and current_pos == other_prev_pos:
+                print(f"collision detected between {vehicle.getName()} and {other_vehicle.getName()}!")
+                stopSim = True
+                return  
+
+        # exact position match
+        if current_pos in seen_positions:
+            print(f"Collision detected between {vehicle.getName()} and {seen_positions[current_pos]} at {current_pos}!")
+            stopSim = True
+            return  
+        else:
+            seen_positions[current_pos] = vehicle.getName()
+
+        # Update previous positions
+        previous_positions[vehicle.getName()] = current_pos
+
+    if not collision_detected:
+        print("No collisions detected.")
+
+
+def updateDisplay():
+    print("\n Vehicle Positions:")
+    for vehicle in vehicles:
+        x, y = vehicle.getPosition()
+        print(f"{vehicle.getName()} - Position: ({x},{y})")
+
+
+def runSimulation():
+    global stopSim
+    stopSim = False  # Reset stop flag when simulation starts
+
+    def simulation():
+        global stopSim
+        for _ in range(10):  # Run for 10 iterations
+            if stopSim:
+                print("Simulation stopped due to collision!")
+                return  
+            for vehicle in vehicles:
+                vehicle.moveVehicle()
+            
+            detectCollision() 
+            updateDisplay()
+            time.sleep(1)  
+
+    thread = threading.Thread(target=simulation)
+    thread.daemon = True
+    thread.start()
+
+
+def deleteVehicle():
+    name = input("Enter the name of the vehicle you wish to delete: ")
+    global vehicles
+    vehicles = [vehicle for vehicle in vehicles if vehicle.getName() != name]
+    print(f"Deleted {name} from simulation.")
+
+
+def stopSimulation():
+    global stopSim
+    stopSim = True
+    print("Stopping Simulation.")
+
+
+def userMenu():
+    while True:
+        print("\nWelcome to the Traffic Simulator!!")
+        print("1. Add vehicle")
+        print("2. Delete vehicle")
+        print("3. Start Simulation")
+        print("4. Stop Simulation")
+        print("5. Exit")
+        choice = input("Make your selection: ")
+
+        if choice == "1":
+            addVehicle()
+        elif choice == "2":
+            deleteVehicle()
+        elif choice == "3":
+            runSimulation()
+        elif choice == "4":
+            stopSimulation()
+        elif choice == "5":
+            print("Exiting. Thanks for using the traffic simulator!")
+            break
+        else:
+            print("Invalid selection. Please try again!")
+
+
+userMenu()

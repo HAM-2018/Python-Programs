@@ -1,3 +1,5 @@
+# 2D traffic simulator allowing the user to add, delete, start and stop the simulation which will run for 10 cycles.
+
 import time
 import threading
 
@@ -20,11 +22,11 @@ class Vehicle:
             self._speed = updatedSpeed
 
     def setDirection(self, updatedDirection):
-        cardinalDirections = {"NORTH", "SOUTH", "EAST", "WEST"}
+        cardinalDirections = {"NORTH", "SOUTH", "EAST", "WEST","NORTHWEST", "NORTHEAST", "SOUTHEAST", "SOUTHWEST"}
         if updatedDirection.upper() in cardinalDirections:
             self._direction = updatedDirection.upper()
         else:
-            print("Invalid direction. Please enter NORTH, SOUTH, EAST OR WEST")
+            print("Invalid direction. (ex.. North, Southwest) ")
 
     def getPosition(self):
         return self._position
@@ -39,6 +41,15 @@ class Vehicle:
             self._position = (x + self._speed, y)
         elif self._direction == "WEST":
             self._position = (x - self._speed, y)
+        elif self._direction == "NORTHEAST":
+            self._position = (x + self._speed // 2, y + self._speed // 2)
+        elif self._direction == "NORTHWEST":
+            self._position = (x - self._speed // 2, y + self._speed // 2)
+        elif self._direction == "SOUTHEAST":
+            self._position = (x + self._speed // 2, y - self._speed // 2)
+        elif self._direction == "SOUTHWEST":
+            self._position = (x - self._speed // 2, y - self._speed // 2)
+
 
     def moveVehicle(self):
         self.updatePosition()
@@ -67,14 +78,14 @@ previous_positions = {}  # Store previous positions of each vehicle
 
 def detectCollision():
     global stopSim
-    seen_positions = {}  # Dictionary to track positions
+    seen_positions = {}  # Dictionary to track positions in the time step
     collision_detected = False
 
     for vehicle in vehicles:
         current_pos = vehicle.getPosition()
-        previous_pos = previous_positions.get(vehicle.getName(), current_pos)
+        previous_pos = previous_positions.get(vehicle.getName(), current_pos) 
 
-        # Check if vehicle drove through another vehicle
+        # Check if another vehicle occupied this spott
         for other_vehicle in vehicles:
             if vehicle == other_vehicle:
                 continue  # Skip self

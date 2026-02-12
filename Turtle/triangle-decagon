@@ -1,0 +1,18 @@
+from turtle import Turtle, Screen
+
+timmy_turtle = Turtle()
+timmy_turtle.shape("turtle")
+timmy_turtle.color("green")
+
+screen = Screen()
+y = 0
+x = 3
+while y < 10:
+    for i in range(x):
+        angle = 360 / x
+        timmy_turtle.forward(100)
+        timmy_turtle.right(angle)
+
+    y += 1
+    x += 1
+screen.exitonclick()

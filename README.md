@@ -1,3 +1,3 @@
 # Python-Programs
 
-A collection of Python programs from calculators, Employee payroll managment and calculations, Trip estimators and more!
+A collection of Python programs from games to employee payroll managment and calculations, Trip estimators and much more!
